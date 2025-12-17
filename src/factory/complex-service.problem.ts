@@ -67,12 +67,11 @@ class ServiceFactory {
     private static instance: ServiceFactory;
 
     // Hold our services
-    private authService: AuthService;
-    private userService: UserService;
-    private emailService: EmailService;
-    private db: DatabaseConnection;
+    private authService!: AuthService;
+    private userService!: UserService;
+    private emailService!: EmailService;
+    private db!: DatabaseConnection;
 
-    private constructor() { }
 
     static getInstance(): ServiceFactory {
         if (!ServiceFactory.instance) {

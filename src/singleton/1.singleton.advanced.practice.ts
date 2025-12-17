@@ -1,3 +1,4 @@
+export { }
 /**
  * PATTERN: SINGLETON (ADVANCED)
  * 
@@ -60,15 +61,28 @@ class Logger {
     private static instance: Logger
 
     // TODO: Instance property `logs` initialized to []
-    private logs: string[]
+    private logs: string[] = []
 
-    private constructor(log: string){
-        
-    }
+    private constructor() { }
 
     // TODO: log(msg) method
+    log(msg: string) {
+        this.logs.push(msg)
+    }
 
     // TODO: printLogs() method
+    printLogs() {
+        this.logs.forEach((log, index) => {
+            console.log(`${index}: ${log}`)
+        })
+    }
+
+    static getInstance() {
+        if (!Logger.instance) {
+            Logger.instance = new Logger()
+        }
+        return Logger.instance
+    }
 }
 
 /**
@@ -84,10 +98,32 @@ class Logger {
 
 class RequestCache {
     // TODO: Singleton boilerplate
+    private static instance: RequestCache
 
     // TODO: private cache = new Map<string, any>()
+    private cache: Map<string, any> = new Map()
+    private constructor() { }
 
     // TODO: set/get/clear methods
+    set(key: string, value: any) {
+        this.cache.set(key, value)
+        return true
+    }
+
+    get(key: string) {
+        return this.cache.get(key)
+    }
+    // 2. Missing method from requirements
+    clear() {
+        this.cache.clear();
+    }
+
+    static getInstance() {
+        if (!this.instance) {
+            this.instance = new RequestCache()
+        }
+        return this.instance
+    }
 }
 
 
@@ -117,14 +153,28 @@ try {
 
     console.log("\n--- TEST START: LOGGER ---");
     // TODO: Uncomment when Logger is ready
-    // const logger1 = Logger.getInstance();
-    // logger1.log("User logged in");
+    const logger1 = Logger.getInstance();
+    logger1.log("User logged in");
 
-    // const logger2 = Logger.getInstance();
-    // logger2.log("User clicked button");
+    const logger2 = Logger.getInstance();
+    logger2.log("User clicked button");
 
-    // logger1.printLogs(); 
+    logger1.printLogs();
     // Should print BOTH logs because they are the SAME logger!
+
+    console.log("\n--- TEST START: REQUEST CACHE ---");
+    const cache1 = RequestCache.getInstance();
+    cache1.set("user_1", { name: "Alice" });
+
+    const cache2 = RequestCache.getInstance();
+    console.log("User 1 from cache2:", cache2.get("user_1")); // Should be { name: "Alice" }
+
+    if (cache1 === cache2) {
+        console.log("✅ SUCCESS: Cache instances are shared");
+    }
+
+    cache2.clear();
+    console.log("Cache after clear:", cache1.get("user_1")); // Should be undefined
 
 } catch (e) {
     console.error("❌ ERROR:", e);
