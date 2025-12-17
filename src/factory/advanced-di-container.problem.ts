@@ -18,8 +18,11 @@ export { }
  */
 
 // --- 1. INFRASTRUCTURE LAYER (Low Level) ---
-class Logger {
-    info(msg: string) { console.log(`[LOG] ${msg}`); }
+class Logger{
+   info(msg: string){
+    console.log(msg)
+   }
+    
 }
 class Database {
     query(sql: string) { console.log(`[DB] Executing: ${sql}`); }
@@ -44,6 +47,19 @@ class UserRepository {
     }
 }
 
+class OrgRepository{
+    constructor(
+        private db: Database,
+        private cache: RedisCache,
+        private logger: Logger
+    ){}
+    save(org: string){
+        this.logger.info('saving org')
+        this.cache.set(`org:${org}`,'exist')
+        this.db.query('Insert')   
+    }
+}
+
 // --- 3. SERVICE LAYER (Business Logic) ---
 class AuthService {
     constructor(private userRepo: UserRepository, private logger: Logger) { }
@@ -57,62 +73,57 @@ class AuthService {
 // --- CONFIG ---
 const config = { dbUrl: "postgres://..." };
 
-// ❌ MESSY CODE (Refactor this into a ServiceFactory!)
-// Right now we are manually wiring everything. Imagine if we had 50 services!
-const logger = new Logger();
-const db = new Database();
-const cache = new RedisCache(); // New Infrastructure!
-const userRepo = new UserRepository(db, cache, logger); // Updated Dependency!
-const authService = new AuthService(userRepo, logger);
+class ServiceFactory {
+    private static instance: ServiceFactory
+    private constructor() { }
 
-authService.register("alice_dev");
-
-// YOUR GOAL:
-// const container = ServiceFactory.getInstance().initialize(config);
-// container.services.authService.register("alice_super_admin");
-
-
-class ServiceFactory{
-    private static instance : ServiceFactory
-    private constructor(){}
+    // Dependencies (managed by the factory)
     private authService!: AuthService
     private userRepository!: UserRepository
     private redisCache!: RedisCache
     private database!: Database
     private logger!: Logger
-    private services: 
 
-    initialize(){
+    initialize() {
+        // 1. Infrastructure
         this.logger = new Logger()
         this.redisCache = new RedisCache()
         this.database = new Database()
+
+        // 2. Repositories (Inject Infra)
         this.userRepository = new UserRepository(this.database, this.redisCache, this.logger)
+
+        // 3. Services (Inject Repos)
         this.authService = new AuthService(this.userRepository, this.logger)
+
+        return this; // Return instance for chaining!
     }
-    static getInstance(){
-        if(!ServiceFactory.instance){
+
+    static getInstance() {
+        if (!ServiceFactory.instance) {
             ServiceFactory.instance = new ServiceFactory()
         }
         return ServiceFactory.instance
     }
-    getAuthService(){
+
+    // Getters for the container usage
+    getAuthService() {
         return this.authService
     }
-    getUserRepository(){
+    getUserRepository() {
         return this.userRepository
     }
-    getDatabase(){
+    getDatabase() {
         return this.database
     }
-    getLogger(){
+    getLogger() {
         return this.logger
     }
-    getRedisCache(){
+    getRedisCache() {
         return this.redisCache
     }
-
 }
 
-
-const container = ServiceFactory.getInstance().initialize(config);
-container.services.authService.register("alice_super_admin");
+// ✅ Correct usage
+const container = ServiceFactory.getInstance().initialize();
+container.getAuthService().register("alice_super_admin");
