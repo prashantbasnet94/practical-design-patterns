@@ -126,50 +126,48 @@ class ConfigFactory {
 
 
     private constructor() { }
-    static getIntance() {
+    static getInstance() {
         if (!ConfigFactory.instance) {
             ConfigFactory.instance = new ConfigFactory()
         }
         return ConfigFactory.instance
     }
-    createConfig(env: TypeEnv) {
-        switch (env) {
-            case 'Local':
-                this.config = new LocalConfig({
+    createConfig(env: string) {
+        // Normalize input!
+        const normalizedEnv = env.toLowerCase();
+
+        switch (normalizedEnv) {
+            case 'local':
+                return new LocalConfig({
                     apiUrl: 'http://localhost:3000',
                     enableSentry: false,
                     logLevel: 'debug'
                 })
-                return this.config
-            case 'Dev':
-                this.config = new StagingConfig({
+
+            case 'dev':
+            case 'staging':
+                return new StagingConfig({
                     apiUrl: 'https://staging-api.myapp.com',
                     enableSentry: false,
                     logLevel: 'info'
                 })
-                return this.config
-            case 'Prod':
-                this.config = new ProductionConfig({
-                    apiUrl: 'https://api.myapp.com',
-                    enableSentry: true,
-                    logLevel: 'error'
-                })
-                return this.config
 
-            case 'QA':
-                this.config = new ProductionConfig({
+            case 'prod':
+            case 'production':
+            case 'qa':
+                return new ProductionConfig({
                     apiUrl: 'https://api.myapp.com',
                     enableSentry: true,
                     logLevel: 'error'
                 })
-                return this.config
+
             default:
-                this.config = new LocalConfig({
+                console.warn(`Unknown env '${env}', defaulting to Local`);
+                return new LocalConfig({
                     apiUrl: 'http://localhost:3000',
                     enableSentry: false,
                     logLevel: 'debug'
                 })
-                return this.config
         }
     }
 }
@@ -177,25 +175,10 @@ class ConfigFactory {
 
 //after refoator
 
-function newLoadConfig(env: string) {
-    console.log(`Loading config for: ${env.toUpperCase()}`);
-
-    if (env === 'local') {
-        return ConfigFactory.getIntance().createConfig('Local')
-    } else if (env === 'production') {
-        return ConfigFactory.getIntance().createConfig('Prod')
-    } else if (env === 'staging') {
-        return ConfigFactory.getIntance().createConfig('Staging')
-    } else if (env === 'QA') {
-        return ConfigFactory.getIntance().createConfig('QA')
-    } else {
-        throw new Error(`Unknown environment: ${env}`);
-    }
-}
-
-
+// ✅ CLEANER CLIENT CODE
 function newAppStart(env: string) {
-    const config = newLoadConfig(env);
+    // Factory handles all the complexity!
+    const config = ConfigFactory.getInstance().createConfig(env);
 
     console.log(`--- APP STARTING IN [${env.toUpperCase()}] ---`);
     console.log(`API: ${config.apiUrl}`);
