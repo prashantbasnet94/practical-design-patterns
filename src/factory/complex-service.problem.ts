@@ -62,57 +62,49 @@ const config = {
     jwtSecret: "MY_SUPER_SECRET"
 };
 
-// ✅ SOLUTION: Service Factory
-class ServiceFactory {
-    private static instance: ServiceFactory;
+// ❌ MESSY CLIENT CODE (Refactor this!)
+class Factory {
+    private static instance: Factory
+    private db!: DatabaseConnection
+    private userService!: UserService
+    private authService!: AuthService
+    private emailService!: EmailService
 
-    // Hold our services
-    private authService!: AuthService;
-    private userService!: UserService;
-    private emailService!: EmailService;
-    private db!: DatabaseConnection;
-
-
-    static getInstance(): ServiceFactory {
-        if (!ServiceFactory.instance) {
-            ServiceFactory.instance = new ServiceFactory();
+    private constructor() { }
+    init(cfg: typeof config) {
+        this.db = new DatabaseConnection(cfg.dbUrl)
+        this.emailService = new EmailService(cfg.emailKey)
+        this.userService = new UserService(this.db, this.emailService)
+        this.authService = new AuthService(this.userService, cfg.jwtSecret)
+    }
+    static getInstance() {
+        if (!Factory.instance) {
+            Factory.instance = new Factory()
         }
-        return ServiceFactory.instance;
+        return Factory.instance
     }
-
-    initialize(cfg: typeof config) {
-        // 1. Create independent low-level services first
-        this.db = new DatabaseConnection(cfg.dbUrl);
-        this.emailService = new EmailService(cfg.emailKey);
-
-        // 2. Inject them into higher-level services
-        this.userService = new UserService(this.db, this.emailService);
-
-        // 3. Inject THAT into the top-level service
-        this.authService = new AuthService(this.userService, cfg.jwtSecret);
-
-        console.log("✨ Service Factory Initialized All Dependencies");
-    }
-
     getAuthService() {
-        if (!this.authService) throw new Error("Not initialized");
-        return this.authService;
+        return this.authService
     }
-
     getUserService() {
-        if (!this.userService) throw new Error("Not initialized");
-        return this.userService;
+        return this.userService
+    }
+    getEmailService() {
+        return this.emailService
+    }
+    getDatabaseConnection() {
+        return this.db
     }
 }
 
-// ✅ CLEAN CLIENT CODE
+// ✅ CLEAN CLIENT CODE (Using your Factory!)
 console.log("--- APP STARTING (WITH FACTORY) ---");
 
 // 1. Initialize once
-ServiceFactory.getInstance().initialize(config);
+Factory.getInstance().init(config);
 
-// 2. Get what you need (Client doesn't care about DB or Emails!)
-const authService = ServiceFactory.getInstance().getAuthService();
+// 2. Get what you need
+const authService = Factory.getInstance().getAuthService();
 authService.login("alice@example.com");
 
 console.log("--- APP FINISHED ---");
