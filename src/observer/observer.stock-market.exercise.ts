@@ -66,7 +66,7 @@ class WebDashboard implements IObserver {
 class NewsFeed implements IObserver {
     update(stock: string, price: number): void {
         if (stock === 'TSLA') {
-            console.log('price updated')
+            console.log(`[NewsFeed] 🚨 BREAKING NEWS! ${stock} just hit $${price}!`)
         }
     }
 }
@@ -77,12 +77,14 @@ class NewsFeed implements IObserver {
 // TODO: Implement Observers
 
 // --- TESTS ---
-// const market = new StockMarket();
-// const app = new MobileApp();
-// const dashboard = new WebDashboard();
+const market = StockMarket.getInstance()
+const mobile = new MobileApp()
+const webApp = new WebDashboard()
 
-// market.subscribe(app);
-// market.subscribe(dashboard);
+market.subscribe(mobile)
+market.subscribe(webApp)
+market.subscribe(new NewsFeed())
 
-// market.setPrice("AAPL", 150);
-// market.setPrice("TSLA", 700);
+market.setPrice('APPL', 200)
+market.setPrice('META', 300)
+market.setPrice('TSLA', 500)
