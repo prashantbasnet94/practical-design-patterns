@@ -38,6 +38,98 @@
 
 type DatabaseType = 'mysql' | 'postgresql' | 'mongodb';
 
+
+interface IDatabase {
+    connect(): void
+    disconnect(): void
+    query(sql: string): void
+    getConectionString(): string
+}
+
+class PostgresSQLDatabase implements IDatabase {
+    constructor(config: DatabaseConfig) { }
+    connect(): void {
+
+    }
+    disconnect(): void {
+
+    }
+    query(sql: string): void {
+
+    }
+    getConectionString(): string {
+        return ""
+    }
+}
+class MongoDBDatabase implements IDatabase {
+    constructor(config: DatabaseConfig) {
+
+    }
+    connect(): void {
+
+    }
+    disconnect(): void {
+
+    }
+    query(sql: string): void {
+
+    }
+    getConectionString(): string {
+        return ""
+    }
+}
+
+class MySQLDatabase implements IDatabase {
+    constructor(config: DatabaseConfig) {
+
+    }
+    connect(): void {
+
+    }
+    disconnect(): void {
+
+    }
+    query(sql: string): void {
+
+    }
+    getConectionString(): string {
+        return ""
+    }
+}
+
+class DatabaseFactory {
+    private static instance: DatabaseFactory
+    private db?: IDatabase
+    private constructor() { }
+
+    init(db: DatabaseType, config: DatabaseConfig) {
+        switch (db) {
+            case 'mysql':
+                this.db = new MySQLDatabase(config)
+                return this.db
+            case 'mongodb':
+                this.db = new MongoDBDatabase(config)
+                return this.db
+            case 'postgresql':
+                this.db = new PostgresSQLDatabase(config)
+                return this.db
+            default:
+                return throw new Error("need db type")
+
+        }
+    }
+    static getInstance() {
+        if (!DatabaseFactory.instance) {
+            DatabaseFactory.instance = new DatabaseFactory()
+        }
+        return DatabaseFactory.instance
+    }
+}
+
+
+
+
+
 interface DatabaseConfig {
     host: string;
     port: number;
@@ -46,20 +138,20 @@ interface DatabaseConfig {
 
 // TODO: Implement DatabaseFactory
 function createDatabase(type: DatabaseType, config: DatabaseConfig) {
-    throw new Error("Not implemented");
+    return DatabaseFactory.getInstance().init(type, config)
 }
 
 // --- TESTS ---
 // Uncomment when ready to test
 
-// const mysqlDb = createDatabase('mysql', { host: 'localhost', port: 3306, database: 'myapp' });
-// mysqlDb.connect();
-// mysqlDb.query('SELECT * FROM users');
-// console.log(mysqlDb.getConnectionString());
+const mysqlDb = createDatabase('mysql', { host: 'localhost', port: 3306, database: 'myapp' });
+mysqlDb.connect();
+mysqlDb.query('SELECT * FROM users');
+console.log(mysqlDb.getConnectionString());
 
-// const mongoDb = createDatabase('mongodb', { host: 'localhost', port: 27017, database: 'myapp' });
-// mongoDb.connect();
-// mongoDb.query('db.users.find()');
-// console.log(mongoDb.getConnectionString());
+const mongoDb = createDatabase('mongodb', { host: 'localhost', port: 27017, database: 'myapp' });
+mongoDb.connect();
+mongoDb.query('db.users.find()');
+console.log(mongoDb.getConnectionString());
 
-export {};
+export { };

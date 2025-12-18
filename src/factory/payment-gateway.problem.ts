@@ -18,19 +18,72 @@ export { }
  * 4. Refactor the `processCheckout` function to use the Factory.
  */
 
-// ❌ MESSY CODE (Refactor this!)
-function processCheckout(amount: number, method: string) {
-    console.log(`\nStarting checkout for $${amount}...`);
+interface IPaymentProcessor {
+    pay(amount: number): void
+}
 
-    if (method === 'stripe') {
+class StipeProcessor implements IPaymentProcessor {
+    pay(amount: number): void {
         console.log("Initializing Stripe...");
         console.log(`[Stripe] Charged $${amount} fee: $${amount * 0.03}`);
-    } else if (method === 'paypal') {
+
+    }
+}
+class PayPalProcessor implements IPaymentProcessor {
+    pay(amount: number) {
         console.log("Initializing PayPal...");
         console.log(`[PayPal] Redirecting user... Charged $${amount}`);
-    } else if (method === 'crypto') {
-        console.log("Initializing Crypto Wallet...");
-        console.log(`[Crypto] Mining transaction... Charged $${amount}`);
+    }
+}
+class CrypoProcessor implements IPaymentProcessor {
+    pay(amount: number) { }
+}
+
+
+type tPay = 'stripe' | 'paypal' | 'crypto'
+
+class PaymentFactory {
+    private static instance: PaymentFactory
+    private processor?: IPaymentProcessor
+    private constructor() { }
+    createProcessor(type: tPay): IPaymentProcessor {
+        switch (type) {
+            case 'stripe':
+                this.processor = new StipeProcessor()
+                return this.processor
+            case 'paypal':
+                this.processor = new PayPalProcessor()
+                return this.processor
+            case 'crypto':
+                this.processor = new CrypoProcessor()
+                return this.processor
+            default:
+                throw new Error("type is required.")
+
+        }
+
+    }
+    static getInstance() {
+        if (!PaymentFactory.instance) {
+            PaymentFactory.instance = new PaymentFactory()
+        }
+        return PaymentFactory.instance
+    }
+}
+
+
+
+
+
+
+
+
+// ❌ MESSY CODE (Refactor this!)
+function processCheckout(amount: number, method: tPay) {
+    let payment = PaymentFactory.getInstance()
+
+    if (method) {
+        payment.createProcessor(method)
     } else {
         throw new Error("Unknown payment method!");
     }
