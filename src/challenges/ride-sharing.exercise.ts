@@ -51,14 +51,49 @@ interface IVehicle {
 // ---------------------------------------------------------
 // 2. Concrete Vehicles (Products)
 // ---------------------------------------------------------
-// TODO: Implement UberX, UberBlack, UberPool
+class UberX implements IVehicle {
+    getType(): string {
+        return 'UberX';
+    }
+    getPriceMultiplier(): number {
+        return 1.0;
+    }
+}
+
+class UberBlack implements IVehicle {
+    getType(): string {
+        return 'UberBlack';
+    }
+    getPriceMultiplier(): number {
+        return 2.5;
+    }
+}
+
+class UberPool implements IVehicle {
+    getType(): string {
+        return 'UberPool';
+    }
+    getPriceMultiplier(): number {
+        return 0.7;
+    }
+}
 
 // ---------------------------------------------------------
 // 3. Vehicle Factory
 // ---------------------------------------------------------
 class VehicleFactory {
     static createVehicle(type: RideType): IVehicle {
-        throw new Error("Not implemented");
+        switch (type) {
+            case 'X':
+                return new UberX();
+            case 'BLACK':
+                return new UberBlack();
+            case 'POOL':
+                return new UberPool();
+            default:
+                const exhaustive: never = type;
+                throw new Error(`Unknown vehicle type: ${exhaustive}`);
+        }
     }
 }
 
@@ -83,27 +118,66 @@ class DriverApp implements IRideObserver {
 // 5. RideDispatcher (Singleton + Subject)
 // ---------------------------------------------------------
 class RideDispatcher {
-    // TODO: Singleton Logic
-    // TODO: Manage Observers (riders and drivers)
+    private static instance: RideDispatcher;
+    private observers: Set<IRideObserver> = new Set();
 
-    public requestRide(type: RideType, rider: RiderApp) {
-        // 1. Create Vehicle using Factory
-        // 2. Notify Driver (simulate finding one)
-        // 3. Notify Rider ("Driver found...")
+    private constructor() {}
+
+    static getInstance(): RideDispatcher {
+        if (!RideDispatcher.instance) {
+            RideDispatcher.instance = new RideDispatcher();
+        }
+        return RideDispatcher.instance;
+    }
+
+    subscribe(observer: IRideObserver): void {
+        this.observers.add(observer);
+    }
+
+    unsubscribe(observer: IRideObserver): void {
+        this.observers.delete(observer);
+    }
+
+    private notify(status: RideStatus, message: string): void {
+        this.observers.forEach(observer => {
+            observer.onRideUpdate(status, message);
+        });
+    }
+
+    public requestRide(type: RideType, rider: RiderApp, pickup: string): void {
+        const vehicle = VehicleFactory.createVehicle(type);
+
+        this.notify('REQUESTED', `Ride requested: ${vehicle.getType()} at ${pickup}`);
+
+        setTimeout(() => {
+            this.notify('MATCHED', `Driver found: Toyota Camry (License ABC-123) - ${vehicle.getType()}`);
+
+            setTimeout(() => {
+                this.notify('STARTED', 'Ride started');
+
+                setTimeout(() => {
+                    this.notify('COMPLETED', 'Ride ended');
+                }, 1000);
+            }, 1000);
+        }, 500);
     }
 }
 
 // ---------------------------------------------------------
 // 6. Test
 // ---------------------------------------------------------
-// const dispatcher = RideDispatcher.getInstance();
+const dispatcher = RideDispatcher.getInstance();
 
-// const rider = new RiderApp("Alice");
-// const driver = new DriverApp("Bob");
+const rider = new RiderApp("Alice");
+const driver = new DriverApp("Bob");
 
-// // In a real app, drivers would "subscribe" when they go online
-// dispatcher.subscribe(driver); 
-// dispatcher.subscribe(rider);
+dispatcher.subscribe(driver);
+dispatcher.subscribe(rider);
 
-// console.log("--- Requesting Ride ---");
-// dispatcher.requestRide('X', rider);
+console.log("--- Requesting UberX Ride ---");
+dispatcher.requestRide('X', rider, 'Main St');
+
+setTimeout(() => {
+    console.log("\n--- Requesting UberBlack Ride ---");
+    dispatcher.requestRide('BLACK', rider, '5th Avenue');
+}, 3000);

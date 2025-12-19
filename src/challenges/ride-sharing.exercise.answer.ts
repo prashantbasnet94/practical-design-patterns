@@ -39,13 +39,13 @@ export { };
 
 interface IRideDispatcher{
     request(): void
-    notify(): void
+    notify(status: string, msg: string): void
     subscribe(observer: IObserver): void
     unsubscribe(observer: IObserver): void
     requestRide(vechileType:  vType, rider: IObserver): void
 }
 interface IObserver{
-    onRideUpdate(vechileType: vType, rider: IObserver): void
+    onRideUpdate(status: string, msg: string): void
 }
 
 class RideDispatcher implements IRideDispatcher{
@@ -56,8 +56,8 @@ class RideDispatcher implements IRideDispatcher{
     request(): void {
         throw new Error("Method not implemented.");
     }
-    notify(): void {
-        throw new Error("Method not implemented.");
+    notify(status:string, msg: string): void {
+       this.observers.forEach(o => o.onRideUpdate(status, msg))
     }
     subscribe(observer: IObserver): void {
        this.observers.push(observer)
@@ -66,7 +66,19 @@ class RideDispatcher implements IRideDispatcher{
         this.observers = this.observers.filter(o => o !== observer)
     }
     requestRide(vechileType: vType, rider: IObserver): void {
-        this.observers.forEach(o => o.onRideUpdate(vechileType, rider))
+        const vechile = VehicleFactory.init(vechileType)
+        this.notify('REQUESTED', "Ride requested: Pickup at Main St")
+
+        setTimeout(() => {
+            this.notify('MATCHED', `Driver found: Toyota Camry (License ABC-123) - ${vechile.getType()}`);
+           setTimeout(() => {
+                this.notify('STARTED', 'Ride started');
+
+                setTimeout(() => {
+                    this.notify('COMPLETED', 'Ride ended');
+                }, 1000);
+            }, 1000);
+        }, 500)
     }
     static getInstance() {
         if (!RideDispatcher.instance) {
@@ -151,20 +163,20 @@ class VehicleFactory{
 
 class RiderApp implements IObserver{
     constructor(private user: string) { }
-    onRideUpdate(): void {
-
-        console.log("Ride requested: Pickup at Main St")
-        console.log("Ride started", "Ride ended")
+    onRideUpdate(status: string, msg: string): void {
+     console.log('Rider: Notification: '+ status + ' ' + msg )
     }
+
 
 
 }
 
 class DriverApp implements IObserver{
     constructor(private name: string) { }
-    onRideUpdate(): void {
-        console.log( "Driver found: Toyota Camry (License 123)")
+    onRideUpdate(status: string, msg: string): void {
+        console.log('Driver: Notification: '+ status + ' ' + msg )
     }
+
 }
 // 4. Concrete Observers
 
