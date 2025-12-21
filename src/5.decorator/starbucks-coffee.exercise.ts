@@ -43,14 +43,48 @@ class SimpleCoffee implements ICoffee {
     }
 }
 
-// 3. Abstract Decorator (Optional but recommended for strict typing)
-// abstract class CoffeeDecorator ...
+// 3. Abstract Decorator
+abstract class CoffeeDecorator implements ICoffee {
+    constructor(protected coffee: ICoffee) { }
+
+    getCost(): number {
+        return this.coffee.getCost();
+    }
+
+    getDescription(): string {
+        return this.coffee.getDescription();
+    }
+}
 
 // 4. Concrete Decorators
-// class Milk ...
-// class Sugar ...
+class Milk extends CoffeeDecorator {
+    getCost(): number {
+        return this.coffee.getCost() + 2;
+    }
+    getDescription(): string {
+        return this.coffee.getDescription() + ", Milk";
+    }
+}
+
+class Sugar extends CoffeeDecorator {
+    getCost(): number {
+        return this.coffee.getCost() + 1;
+    }
+    getDescription(): string {
+        return this.coffee.getDescription() + ", Sugar";
+    }
+}
+
+class WhippedCream extends CoffeeDecorator {
+    getCost(): number {
+        return this.coffee.getCost() + 5;
+    }
+    getDescription(): string {
+        return this.coffee.getDescription() + ", Whipped Cream";
+    }
+}
 
 // === USAGE / TEST ===
-// const myCoffee = new WhippedCream(new Sugar(new Milk(new SimpleCoffee())));
-// console.log(myCoffee.getDescription()); // "Simple Coffee, Milk, Sugar, Whipped Cream"
-// console.log(myCoffee.getCost());        // 18
+const myCoffee = new WhippedCream(new Sugar(new Milk(new SimpleCoffee())));
+console.log(myCoffee.getDescription()); // "Simple Coffee, Milk, Sugar, Whipped Cream"
+console.log(myCoffee.getCost());        // 18
