@@ -1,3 +1,4 @@
+import { DeviceFactory } from '../devices/DeviceFactory';
 import { ISmartDevice, tDevice } from './../devices/types';
 /**
  * PATTERN: DECORATOR
@@ -45,37 +46,46 @@ export abstract class BaseDecorator implements ISmartDevice {
     getStatus(): string {
         return this.device.getStatus()
     }
-    getCost(): number {
-        return this.getCost()
-    }
+
 }
 
 export class SecureDecorator extends BaseDecorator {
     private pin: number
     constructor(device: ISmartDevice, pin: number) {
         super(device)
-        this.pin =
-     }
+        this.pin = pin
+    }
     turnOff(): void {
         super.turnOff()
     }
     turnOn(): void {
         console.log("checking pin")
-        if(this.pin === 1234)
-        console.log(" pin correct, turning on ... ")
-        super.turnOn()
+        if (this.pin === 1234) {
+            console.log(" pin correct, turning on ... ")
+            super.turnOn()
+        }
+        console.log("incorrect password")
     }
     getStatus(): string {
         return super.getStatus()
     }
-    getCost(): number {
-        return super.getCost()
-    }
+
 }
 
-export class LoggingDecorator extends BaseDecorator{
+export class LoggingDecorator extends BaseDecorator {
     turnOn(): void {
         console.log("logging, that i am turining the device on")
         super.turnOn()
     }
 }
+
+
+let device = DeviceFactory.create({
+    status: false,
+    id: '1',
+    type: 'light'
+})
+
+const secureLight = new SecureDecorator(device, 123)
+const loggingLight = new LoggingDecorator(secureLight)
+loggingLight.turnOn()
