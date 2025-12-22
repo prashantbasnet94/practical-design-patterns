@@ -19,10 +19,17 @@
 
 import { ISmartDevice } from "../devices/types"
 
-interface IMember{
+interface IMember {
     turnOn(): void
     turnOff(): void
 }
+/**
+ * REVIEW HINT (Composite):
+ * Key Requirement: The Composite (Group) must implement the SAME interface as the Leaf (Device).
+ *
+ * Change `implements IMember` -> `implements ISmartDevice`.
+ * This allows you to nest groups: `new DeviceGroup().add(new DeviceGroup())`.
+ */
 export class DeviceGroup implements IMember {
     private children: ISmartDevice[] = []
     add(device: ISmartDevice) {

@@ -32,11 +32,20 @@ export class HomeHub {
     private thermostat?: IHomeComponent
     private lock?: IHomeComponent
     private frontDoor?: IHomeComponent
+
+    /**
+     * REVIEW HINT (Singleton/Architecture):
+     * The HomeHub shouldn't necessarily "hardcode" specific devices (light, thermostat) as properties.
+     * Use a collection (e.g., `devices: Map<string, ISmartDevice>`) or rely on the EventBus.
+     *
+     * Also, avoid hardcoding `DeviceFactory.create` calls here.
+     * In a real app, these would come from a database config or a discovery process.
+     */
     connect() {
-        this.light = DeviceFactory.create('light', {status: false,cost: 500 })
-        this.thermostat = DeviceFactory.create('thermostat', {status: false, cost: 1500})
+        this.light = DeviceFactory.create('light', { status: false, cost: 500 })
+        this.thermostat = DeviceFactory.create('thermostat', { status: false, cost: 1500 })
         this.lock = DeviceFactory.create('lock', { status: false, cost: 1000 })
-        this.frontDoor = DeviceFactory.create("front_door",{status: false, cost: 5000})
+        this.frontDoor = DeviceFactory.create("front_door", { status: false, cost: 5000 })
     }
     systemStatus() {
 

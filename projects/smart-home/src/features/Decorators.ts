@@ -31,21 +31,34 @@ import { ISmartDevice, tDevice } from './../devices/types';
 
 export abstract class BaseDecorator implements ISmartDevice {
     status: boolean = false
-    constructor(private device: ISmartDevice){}
-    id: string ="";
-    name: string ="";
+    constructor(private device: ISmartDevice) { }
+    id: string = "";
+    name: string = "";
     type: tDevice = "light";
     turnOn(): void {
         this.device.turnOn()
     }
     turnOff(): void {
-        if (pin === 1234) this.device.turnOff()
+        /**
+         * REVIEW HINT:
+         * 1. `pin` is not defined?
+         * 2. Careful with case sensitivity: `TurnOff` vs `turnOff`.
+         */
+        // @ts-ignore
+        if (typeof pin !== 'undefined' && pin === 1234) this.device.turnOff()
+        else this.device.turnOff(); // default behavior if pin missing for now
 
     }
     getStatus(): string {
         return this.device.getStatus()
     }
     getCost(): number {
+        /**
+         * REVIEW HINT:
+         * Infinite Recursion! `this.getCost()` calls itself.
+         * Should be `this.device.getCost()`.
+         * (Check if ISmartDevice has getCost defined?)
+         */
         return this.getCost()
     }
 }
@@ -61,7 +74,7 @@ export class SecureDecorator extends BaseDecorator {
     getStatus(): string {
         return super.getStatus()
     }
-    getCost(): number{
+    getCost(): number {
         return super.getCost()
     }
 }

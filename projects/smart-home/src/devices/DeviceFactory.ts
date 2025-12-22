@@ -24,7 +24,7 @@ import { ISmartDevice, tConfig, tDevice } from "./types"
 
 
 
-class Device implements ISmartDevice{
+class Device implements ISmartDevice {
     status: boolean = false
 
     constructor(public name: string, public id: string, public type: tDevice) {
@@ -36,14 +36,21 @@ class Device implements ISmartDevice{
         this.status = false
     }
     getStatus(): string {
-        console.log(this.name,  " is currently turned : ", this.status)
-        return this.name + " is " + this.type +  " , currently turned : " + this.status
+        console.log(this.name, " is currently turned : ", this.status)
+        return this.name + " is " + this.type + " , currently turned : " + this.status
     }
 }
 
 
 export class DeviceFactory {
     static create(device: tDevice, config: tConfig) {
+        /**
+         * REVIEW HINT (Factory):
+         * You are receiving `config` but ignoring it!
+         * Pass the `config.id` and `config.status` to the new Device.
+         *
+         * Also, hardcoding "1", "2" limits you to one device of each type.
+         */
         switch (device) {
             case 'light':
                 return new Device('light', "1", 'light')
