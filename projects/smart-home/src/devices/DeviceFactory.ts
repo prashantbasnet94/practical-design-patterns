@@ -19,6 +19,42 @@
  * - Instead of a giant switch case, consider a "Registration" pattern where
  *   new device types can register themselves to the factory at runtime.
  */
+
+import { ISmartDevice, tConfig, tDevice } from "./types"
+
+
+
+class Device implements ISmartDevice{
+    status: boolean = false
+
+    constructor(public name: string, public id: string, public type: tDevice) {
+    }
+    turnOn(): void {
+        this.status = true
+    }
+    turnOff(): void {
+        this.status = false
+    }
+    getStatus(): string {
+        console.log(this.name,  " is currently turned : ", this.status)
+        return this.name + " is " + this.type +  " , currently turned : " + this.status
+    }
+}
+
+
 export class DeviceFactory {
-    // TODO: Add factory creation logic
+    static create(device: tDevice, config: tConfig) {
+        switch (device) {
+            case 'light':
+                return new Device('light', "1", 'light')
+            case 'thermostat':
+                return new Device('thermostat', "2", "thermostat")
+            case 'front_door':
+                return new Device('front_door', "3", 'front_door')
+            case 'lock':
+                return new Device('lock', "4", 'lock')
+            default:
+                throw new Error("Device not recognized")
+        }
+    }
 }

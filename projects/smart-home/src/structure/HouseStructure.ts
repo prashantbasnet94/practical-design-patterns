@@ -16,6 +16,25 @@
  * FAANG-STYLE TIP:
  * - This allows recursive commands. `House.turnOff()` -> `Room.turnOff()` -> `Light.turnOff()`.
  */
-export class DeviceGroup {
-    // TODO: Add composite logic (array of children)
+
+import { ISmartDevice } from "../devices/types"
+
+interface IMember{
+    turnOn(): void
+    turnOff(): void
+}
+export class DeviceGroup implements IMember {
+    private children: ISmartDevice[] = []
+    add(device: ISmartDevice) {
+        this.children.push(device)
+    }
+    remove(device: ISmartDevice) {
+        this.children = this.children.filter(o => o !== device)
+    }
+    turnOn(): void {
+        this.children.forEach(o => o.turnOn())
+    }
+    turnOff(): void {
+        this.children.forEach(o => o.turnOff())
+    }
 }

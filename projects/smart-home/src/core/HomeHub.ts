@@ -1,3 +1,6 @@
+import { DeviceFactory, IHomeComponent } from "../devices/DeviceFactory"
+import { tConfig } from "../devices/types"
+
 /**
  * PATTERN: SINGLETON
  * FILE: HomeHub.ts
@@ -23,5 +26,28 @@
  * - Consider making it immutable or read-only where possible.
  */
 export class HomeHub {
-    // TODO: Add static instance logic here
+    private static instance: HomeHub
+    private constructor() { }
+    private light?: IHomeComponent
+    private thermostat?: IHomeComponent
+    private lock?: IHomeComponent
+    private frontDoor?: IHomeComponent
+    connect() {
+        this.light = DeviceFactory.create('light', {status: false,cost: 500 })
+        this.thermostat = DeviceFactory.create('thermostat', {status: false, cost: 1500})
+        this.lock = DeviceFactory.create('lock', { status: false, cost: 1000 })
+        this.frontDoor = DeviceFactory.create("front_door",{status: false, cost: 5000})
+    }
+    systemStatus() {
+
+    }
+    static getInstance() {
+        if (!HomeHub.instance) {
+            HomeHub.instance = new HomeHub()
+        }
+        return HomeHub.instance
+    }
 }
+
+
+

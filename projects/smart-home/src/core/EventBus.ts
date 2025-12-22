@@ -21,6 +21,26 @@
  * - Use TypeScript Generics to ensure the `data` payload matches the `eventType`.
  * - Add error handling so one crashing listener doesn't break the whole loop.
  */
-export class EventBus {
-    // TODO: Add subscription management logic here
+
+interface IObserver{
+    publish(eventType: string, data: string): void
+}
+export class EventBus implements IObserver{
+    private observers: Map<string, IObserver[]>= new Map()
+    private constructor() { }
+    publish(eventType: string, data: string): void {
+        this.observers.get(eventType)?.forEach(o => {
+           o.publish(eventType, data)
+       })
+    }
+
+    subscribe(eventType: string, observer: IObserver) {
+        if (!this.observers.has(eventType)) {
+            this.observers.set(eventType, [])
+        }
+        this.observers.get(eventType)?.push(observer)
+    }
+    unsubsribe(eventType:string, observer: IObserver) {
+        this.observers.set(eventType, this.observers.get(eventType)?.filter(o => o !== observer) || [])
+    }
 }

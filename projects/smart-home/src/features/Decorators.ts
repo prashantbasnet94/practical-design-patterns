@@ -1,3 +1,4 @@
+import { ISmartDevice, tDevice } from './../devices/types';
 /**
  * PATTERN: DECORATOR
  * FILE: Decorators.ts
@@ -26,6 +27,41 @@
  * FAANG-STYLE TIP:
  * - This allows stacking: `new SecureDecorator(new LoggingDecorator(new Light()))`.
  */
-export class BaseDecorator {
-    // TODO: Add wrapping logic
+
+
+export abstract class BaseDecorator implements ISmartDevice {
+    status: boolean = false
+    constructor(private device: ISmartDevice){}
+    id: string ="";
+    name: string ="";
+    type: tDevice = "light";
+    turnOn(): void {
+        this.device.turnOn()
+    }
+    turnOff(): void {
+        if (pin === 1234) this.device.turnOff()
+
+    }
+    getStatus(): string {
+        return this.device.getStatus()
+    }
+    getCost(): number {
+        return this.getCost()
+    }
+}
+
+export class SecureDecorator extends BaseDecorator {
+    turnOff(): void {
+        super.turnOff()
+    }
+    turnOn(): void {
+        console.log(" turning on ... ")
+        super.turnOn()
+    }
+    getStatus(): string {
+        return super.getStatus()
+    }
+    getCost(): number{
+        return super.getCost()
+    }
 }
