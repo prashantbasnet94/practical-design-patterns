@@ -19,10 +19,7 @@
 
 import { ISmartDevice } from "../devices/types"
 
-interface IMember {
-    turnOn(): void
-    turnOff(): void
-}
+
 /**
  * REVIEW HINT (Composite):
  * Key Requirement: The Composite (Group) must implement the SAME interface as the Leaf (Device).
@@ -30,18 +27,26 @@ interface IMember {
  * Change `implements IMember` -> `implements ISmartDevice`.
  * This allows you to nest groups: `new DeviceGroup().add(new DeviceGroup())`.
  */
-export class DeviceGroup implements IMember {
+export class DeviceGroup implements ISmartDevice {
     private children: ISmartDevice[] = []
+    public constructor(private id: string, private name: string){}
+
     add(device: ISmartDevice) {
         this.children.push(device)
     }
     remove(device: ISmartDevice) {
+        console.log("Group : ", this.name, " removing children ")
         this.children = this.children.filter(o => o !== device)
     }
     turnOn(): void {
+        console.log("GROUP turning on : ", this.name)
         this.children.forEach(o => o.turnOn())
     }
     turnOff(): void {
+        console.log('GROUP turning off : ', this.name)
         this.children.forEach(o => o.turnOff())
+    }
+     getStatus(): string {
+        return this.name + ' status: ' + this.children.map(o => o.getStatus())
     }
 }
