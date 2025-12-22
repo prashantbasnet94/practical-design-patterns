@@ -21,17 +21,24 @@
 // export interface ISmartDevice { ... }
 
 
-export type tConfig = {
-    status: boolean,
-    id: string,
-    type: tDevice
+export interface IDeviceConfig{
+    name: string
+    id: string
+    type: string
 }
 export type tDevice = 'light' | 'thermostat' | 'front_door' | 'lock'
 
 export interface ISmartDevice{
-    id: string
-    name: string
     turnOn(): void
     turnOff(): void
     getStatus(): string,
+}
+export type tData = {
+    id: string,
+    status:  boolean,
+    timeStamp: number
+    name: string
+}
+export interface IObserver {
+    update(data: tData): void
 }

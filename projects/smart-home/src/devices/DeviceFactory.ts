@@ -20,32 +20,46 @@
  *   new device types can register themselves to the factory at runtime.
  */
 
-import { ISmartDevice, tConfig, tDevice } from "./types"
+import { EventBus } from "../core/EventBus"
+import { IDeviceConfig, ISmartDevice } from "./types"
+
 
 
 
 class Device implements ISmartDevice {
     status: boolean = false
 
-    constructor(public name: string, public id: string) {
+    constructor(public config: IDeviceConfig, protected bus: EventBus) {
     }
     turnOn(): void {
-        console.log(this.name, " turning on ")
+        console.log(this.config.name, " turning on ")
+        this.bus.publish('DEVICE_STATUS_ON', {
+            id: this.config.id,
+            name: this.config.name,
+            timeStamp: Date.now(),
+            status: this.status
+        })
         this.status = true
     }
     turnOff(): void {
-        console.log(this.name, " turning off")
+          this.bus.publish('DEVICE_STATUS_OFF', {
+            id: this.config.id,
+            name: this.config.name,
+            timeStamp: Date.now(),
+            status: this.status
+        })
+        console.log(this.config.name, " turning off")
         this.status = false
     }
     getStatus(): string {
-        console.log(this.name, " is currently turned : ", this.status)
-        return this.name + " is " , "currently turned : " + this.status
+        console.log(this.config.name, " is currently turned : ", this.status)
+        return this.config.name + " is " , "currently turned : " + this.status
     }
 }
 
 
 export class DeviceFactory {
-    static create(config: tConfig) {
+    static create(config: IDeviceConfig, bus: EventBus) {
         /**
          * REVIEW HINT (Factory):
          * You are receiving `config` but ignoring it!
@@ -53,17 +67,6 @@ export class DeviceFactory {
          *
          * Also, hardcoding "1", "2" limits you to one device of each type.
          */
-        switch (config.type) {
-            case 'light':
-                return new Device('light', config.id)
-            case 'thermostat':
-                return new Device('thermostat', config.id)
-            case 'front_door':
-                return new Device('front_door', config.id)
-            case 'lock':
-                return new Device('lock', config.id)
-            default:
-                throw new Error("Device not recognized")
-        }
+         return new Device(config, bus)
     }
 }

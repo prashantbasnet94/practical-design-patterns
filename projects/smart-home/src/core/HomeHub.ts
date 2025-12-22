@@ -1,5 +1,6 @@
-import { DeviceFactory, IHomeComponent } from "../devices/DeviceFactory"
-import { ISmartDevice, tConfig } from "../devices/types"
+import { DeviceFactory } from "../devices/DeviceFactory"
+import { IDeviceConfig, ISmartDevice } from "../devices/types"
+import { EventBus } from "./EventBus"
 
 /**
  * PATTERN: SINGLETON
@@ -29,6 +30,7 @@ export class HomeHub {
     private static instance: HomeHub
     private constructor() { }
     private devices: Map<string, ISmartDevice> = new Map()
+    public eventBus = new EventBus()
     /**
      * REVIEW HINT (Singleton/Architecture):
      * The HomeHub shouldn't necessarily "hardcode" specific devices (light, thermostat) as properties.
@@ -37,8 +39,8 @@ export class HomeHub {
      * Also, avoid hardcoding `DeviceFactory.create` calls here.
      * In a real app, these would come from a database config or a discovery process.
      */
-    connect(config: tConfig) {
-        let device = DeviceFactory.create(config)
+    connect(config: IDeviceConfig) {
+        let device = DeviceFactory.create(config, this.eventBus)
         this.devices.set(config.id, device)
     }
     systemStatus() {

@@ -22,23 +22,18 @@
  * - Add error handling so one crashing listener doesn't break the whole loop.
  */
 
-interface IObserver {
-    /**
-     * REVIEW HINT (Observer):
-     * Usually, the Observer has an `update(data)` method, not `publish`.
-     * The `EventBus` publishes; the Observer `reacts`.
-     */
-    update(data: string): void
-}
-export class EventBus  {
+import { IObserver, tData } from "../devices/types"
+
+
+export class EventBus {
     /**
      * REVIEW HINT:
      * `EventBus` usually is the SUBJECT, not an Observer itself.
      * It shouldn't implement `IObserver`.
      */
     private observers: Map<string, IObserver[]> = new Map()
-    private constructor() { }
-    publish(eventType: string, data: string): void {
+    public constructor() { }
+    publish(eventType: string, data:tData): void {
         this.observers.get(eventType)?.forEach(o => {
             o.update(data)
         })
@@ -52,5 +47,13 @@ export class EventBus  {
     }
     unsubsribe(eventType: string, observer: IObserver) {
         this.observers.set(eventType, this.observers.get(eventType)?.filter(o => o !== observer) || [])
+    }
+
+}
+
+
+class ChangeLogger implements IObserver{
+    update(data: tData): void {
+        console.log("Change looger recieved: ", data)
     }
 }
