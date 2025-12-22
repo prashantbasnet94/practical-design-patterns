@@ -1,3 +1,4 @@
+import { EventBus } from '../core/EventBus';
 import { DeviceFactory } from '../devices/DeviceFactory';
 import { ISmartDevice, tDevice } from './../devices/types';
 /**
@@ -63,8 +64,10 @@ export class SecureDecorator extends BaseDecorator {
         if (this.pin === 1234) {
             console.log(" pin correct, turning on ... ")
             super.turnOn()
+        } else {
+             console.log("incorrect password")
         }
-        console.log("incorrect password")
+
     }
     getStatus(): string {
         return super.getStatus()
@@ -81,11 +84,11 @@ export class LoggingDecorator extends BaseDecorator {
 
 
 let device = DeviceFactory.create({
-    status: false,
     id: '1',
-    type: 'light'
-})
+    type: 'light',
+    name:'light',
+}, new EventBus())
 
-const secureLight = new SecureDecorator(device, 123)
+const secureLight = new SecureDecorator(device, 1234)
 const loggingLight = new LoggingDecorator(secureLight)
 loggingLight.turnOn()
