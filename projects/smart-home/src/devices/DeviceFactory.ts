@@ -26,7 +26,7 @@ import { IDeviceConfig, ISmartDevice } from "./types"
 
 
 
-class Device implements ISmartDevice {
+export class Device implements ISmartDevice {
     status: boolean = false
 
     constructor(public config: IDeviceConfig, protected bus: EventBus) {
