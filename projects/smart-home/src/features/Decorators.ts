@@ -83,12 +83,3 @@ export class LoggingDecorator extends BaseDecorator {
 }
 
 
-let device = DeviceFactory.create({
-    id: '1',
-    type: 'light',
-    name:'light',
-}, new EventBus())
-
-const secureLight = new SecureDecorator(device, 1234)
-const loggingLight = new LoggingDecorator(secureLight)
-loggingLight.turnOn()
