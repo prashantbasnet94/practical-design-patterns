@@ -1,4 +1,3 @@
-import { SecurityMonitor } from './SmartHomeListeners';
 import { IObserver, tData } from '../devices/types';
 import { EventBus } from './../core/EventBus';
 
@@ -18,7 +17,7 @@ import { EventBus } from './../core/EventBus';
 
 export class SecurityMonitor implements IObserver{
     constructor(private bus: EventBus) {
-        this.bus.subscribe('SECURITY_ALER', this)
+        this.bus.subscribe('SECURITY_ALERT', this)
     }
 
     update(data: tData): void {
@@ -38,5 +37,22 @@ export class MotionAutomation implements IObserver{
     }
     update(data: tData): void {
         console.log("MOTION DETECTED with data ", data)
+    }
+}
+export class PowerOnMonitor implements IObserver{
+    constructor(private bus: EventBus) {
+        this.bus.subscribe('DEVICE_STATUS_ON', this)
+    }
+    update(data: tData): void {
+        console.log('DEVICE STATUS ON ', data)
+    }
+}
+
+export class PowerOffMonitor implements IObserver{
+    constructor(private bus: EventBus) {
+        this.bus.subscribe('DEVICE_STATUS_OFF', this)
+    }
+    update(data: tData): void {
+        console.log("DEVICE STATUS OFF, ", data)
     }
 }
