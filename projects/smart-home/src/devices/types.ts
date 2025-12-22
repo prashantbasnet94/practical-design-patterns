@@ -31,7 +31,6 @@ export type tDevice = 'light' | 'thermostat' | 'front_door' | 'lock'
 export interface ISmartDevice{
     id: string
     name: string
-    type: tDevice
     turnOn(): void
     turnOff(): void
     getStatus(): string,

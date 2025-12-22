@@ -39,36 +39,30 @@ export abstract class BaseDecorator implements ISmartDevice {
         this.device.turnOn()
     }
     turnOff(): void {
-        /**
-         * REVIEW HINT:
-         * 1. `pin` is not defined?
-         * 2. Careful with case sensitivity: `TurnOff` vs `turnOff`.
-         */
-        // @ts-ignore
-        if (typeof pin !== 'undefined' && pin === 1234) this.device.turnOff()
-        else this.device.turnOff(); // default behavior if pin missing for now
+        this.device.turnOff()
 
     }
     getStatus(): string {
         return this.device.getStatus()
     }
     getCost(): number {
-        /**
-         * REVIEW HINT:
-         * Infinite Recursion! `this.getCost()` calls itself.
-         * Should be `this.device.getCost()`.
-         * (Check if ISmartDevice has getCost defined?)
-         */
         return this.getCost()
     }
 }
 
 export class SecureDecorator extends BaseDecorator {
+    private pin: number
+    constructor(device: ISmartDevice, pin: number) {
+        super(device)
+        this.pin =
+     }
     turnOff(): void {
         super.turnOff()
     }
     turnOn(): void {
-        console.log(" turning on ... ")
+        console.log("checking pin")
+        if(this.pin === 1234)
+        console.log(" pin correct, turning on ... ")
         super.turnOn()
     }
     getStatus(): string {
@@ -76,5 +70,12 @@ export class SecureDecorator extends BaseDecorator {
     }
     getCost(): number {
         return super.getCost()
+    }
+}
+
+export class LoggingDecorator extends BaseDecorator{
+    turnOn(): void {
+        console.log("logging, that i am turining the device on")
+        super.turnOn()
     }
 }
