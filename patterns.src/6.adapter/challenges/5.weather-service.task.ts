@@ -1,19 +1,18 @@
 /**
  * CHALLENGE 5: UNIFYING MULTIPLE PROVIDERS (WEATHER)
- * 
+ *
  * Scenario:
  * You want to build a "Weather Aggregator".
  * It needs to effectively use MULTIPLE completely different weather APIs.
- * 
+ *
  * Problem:
  * 1. `USWeatherAPI`: Returns Fahrenheit, uses "summary" for condition.
  * 2. `EuroWeatherAPI`: Returns Celsius, uses "weather_code" (1=sunny, 2=rainy).
- * 
+ *
  * Task:
  * Implementing adapters that normalize EVERYTHING into `IWeather`.
  * - Convert F -> C
  * - Map weather codes -> strings
- */
 
 // --- 1. Target Interface (Normalized) ---
 interface IWeather {
@@ -73,3 +72,4 @@ function printWeather(provider: IWeatherProvider) {
 // Uncomment to test
 // printWeather(new USAdapter(new USWeatherAPI()));   // Expect: ~40°C, Sunny
 // printWeather(new EuroAdapter(new EuroWeatherAPI())); // Expect: 20°C, Rainy
+ */

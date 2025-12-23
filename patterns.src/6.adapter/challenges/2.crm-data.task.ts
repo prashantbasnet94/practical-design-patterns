@@ -1,17 +1,16 @@
 /**
  * CHALLENGE 2: DATA TRANSFORMATION ADAPTER
- * 
+ *
  * Scenario:
  * Your app displays a list of users. It uses the `IUserSource` interface.
- * 
+ *
  * Problem:
  * You need to fetch users from a `LegacyCRMSystem`.
  * - Your app expects: `fullName` (string).
  * - Legacy CRM provides: `firstName` and `lastName` (separate strings).
- * 
+ *
  * Task:
  * Implement `CRMAdapter` to concatenate the names correctly.
- */
 
 // --- 1. Target Interface ---
 interface IUserSource {
@@ -60,3 +59,4 @@ displayUsers(adapter);
 // Expected Output:
 // User: John Doe
 // User: Alice Smith
+ */

@@ -1,17 +1,16 @@
 /**
  * CHALLENGE 4: THE LOGIC HEAVY ADAPTER (DATABASE)
- * 
+ *
  * Scenario:
  * Your modern app uses "Repositories" that talk to the database using clean objects.
  * e.g., `repo.find({ id: 5 })`.
- * 
+ *
  * Problem:
  * You are migrating to a very old SQL database engine.
  * It ONLY accepts raw SQL strings like "SELECT * FROM users WHERE id = 5".
- * 
+ *
  * Task:
  * Implement `SQLAdapter` that translates the `Query` object into a SQL string.
- */
 
 // --- 1. Target Interface (Modern Way) ---
 interface IDatabaseRepo {
@@ -65,3 +64,4 @@ const app = new UserApp(adapter);
 
 app.getUserName(1);  // Should log: "User 1 (Alice)"
 app.getUserName(42); // Should log: "User 42 (Bob)"
+ */

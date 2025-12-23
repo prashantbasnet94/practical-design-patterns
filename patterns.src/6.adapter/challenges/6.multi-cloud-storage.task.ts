@@ -1,14 +1,14 @@
 /**
  * CHALLENGE 6: MULTI-CLOUD STORAGE (VENDOR AGNOSTICISM)
- * 
+ *
  * Scenario:
  * Your CTO wants the app to be "Cloud Agnostic".
  * We should be able to switch from AWS to Google Cloud without rewriting our app.
- * 
+ *
  * Problem:
  * - AWS S3 uses `buckets` and `keys`.
  * - Google Cloud Storage (GCS) uses `buckets` and `files` (blobs).
- * 
+ *
  * Task:
  * 1. Implement `S3Adapter` and `GCSAdapter`.
  * 2. They must align with `IStorageService`.
