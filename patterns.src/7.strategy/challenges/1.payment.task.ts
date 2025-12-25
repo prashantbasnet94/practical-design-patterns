@@ -1,13 +1,13 @@
 /**
  * CHALLENGE 1: PAYMENT PROCESSING (STRATEGY PATTERN)
- * 
+ *
  * Scenario:
  * You are building a Checkout system for an E-commerce store.
  * Users can pay with different methods: Credit Card, PayPal, or Bitcoin.
- * 
+ *
  * Problem:
  * Writing one giant `checkout()` method with `if (type === 'paypal')` is bad.
- * 
+ *
  * Task:
  * 1. Define `IPaymentStrategy` interface with `pay(amount: number): void`.
  * 2. Implement 3 strategies:
