@@ -1,3 +1,4 @@
+import { SQLQueryBuilder } from './1.query-builder.task';
 /**
  * CHALLENGE 1: SQL QUERY BUILDER
  *
@@ -13,42 +14,48 @@
  * 5. `build()`: returns the final SQL string.
  */
 
-export class SQLQueryBuilder {
-    private selectedFields: string[] = ["*"];
-    private table: string = "";
-    private conditions: string[] = [];
-    private sorting: string = "";
-
-    // TODO: Implement the methods here
+ class SQLQueryBuilder {
+    private selectedFields: string[] = []
+    private table: string = ""
+    private conditions: string[] = []
+    private sortBy: string[] = []
+    constructor(){}
 
     select(...fields: string[]): SQLQueryBuilder {
-        // Your code here
-        return this;
+        this.selectedFields.push(...fields)
+        return this
     }
-
     from(table: string): SQLQueryBuilder {
-        // Your code here
-        return this;
+        this.table = table
+        return this
     }
-
-    where(condition: string): SQLQueryBuilder {
-        // Your code here
-        return this;
+    where(condition: string) : SQLQueryBuilder{
+        this.conditions.push(condition)
+        return this
     }
+     orderBy(field: string, direction: "ASC" | "DESC" ="ASC"): SQLQueryBuilder{
+        this.sortBy.push(`${field} ${direction}`)
+        return this
+     }
 
-    orderBy(field: string, direction: "ASC" | "DESC" = "ASC"): SQLQueryBuilder {
-        // Your code here
-        return this;
-    }
+     build(): string {
+         if (!this.table) {
+             throw new Error("Table is required")
+         }
 
-    build(): string {
-        // Construct the final query string
-        // Example: SELECT name, age FROM users WHERE age > 18 AND active = 1 ORDER BY age DESC
+         const columns = 0 < this.selectedFields.length ? this.selectedFields.join(', ') : '*'
+         let query = `SELECT ${columns} FROM ${this.table}`
 
-        // TODO: Validate ensuring 'table' is set
+         if (0 < this.conditions.length) {
+             query += `WHERE ${this.conditions.join(" AND ")}`
+         }
 
-        return "";
-    }
+         if (0 < this.sortBy.length) {
+             query+= `ORDER BY ${this.sortBy.join(", ")}`
+         }
+         return query
+     }
+
 }
 
 // --- TEST CASE ---

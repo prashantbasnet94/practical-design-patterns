@@ -1,6 +1,6 @@
 /**
  * STRATEGY PATTERN - REAL WORLD EXAMPLE (SORTING)
- * 
+ *
  * Scenario:
  * A DataProcessor class that needs to sort data.
  * The "best" sorting algorithm depends on the dataset size.
@@ -64,14 +64,14 @@ sorter.sort(hugePayload);
 /**
  * WHY THIS MATTERS:
  * We eliminated the "Switch Statement of Doom":
- * 
+ *
  * class BadSorter {
  *   sort(data, type) {
  *      if (type === 'bubble') { ... }
  *      else if (type === 'quick') { ... }
  *   }
  * }
- * 
+ *
  * If we wanted to add "MergeSort", we'd have to OPEN the BadSorter class.
  * With Strategy, we just create `class MergeSortStrategy` and pass it in.
  * (Open/Closed Principle)
