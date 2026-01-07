@@ -1,4 +1,4 @@
-export type ReportType = 'PDF' | 'CSV';
+import { ReportType } from './interface/reportgenerator.interface';
 
 export class ReportGenerator {
     /**
