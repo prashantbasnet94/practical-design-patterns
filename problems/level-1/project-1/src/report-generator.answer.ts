@@ -3,6 +3,7 @@ import { CsvReportGenerator } from './modules/reportgenerator.csv';
 import { JsonReportGenerator } from './modules/reportgenerator.json';
 import { PdfReportGenerator } from './modules/reportgenerator.pdf';
 import { XmlReportGenerator } from './modules/reportgenerator.xml';
+import { ReportFactory } from './report.factory';
 
 
 export class ReportGenerator {
@@ -13,34 +14,15 @@ export class ReportGenerator {
      * report type (e.g., XML) requires modifying this class.
      */
 
-    private pdfGenerator: PdfReportGenerator
-    private xmlGenerator: XmlReportGenerator
-    private jsonGenerator: JsonReportGenerator
-    private csvGenerator: CsvReportGenerator
-
-    constructor(generator: IReportGenerator){
-        this.pdfGenerator = new PdfReportGenerator()
-        this.xmlGenerator = new XmlReportGenerator()
-        this.jsonGenerator = new JsonReportGenerator()
-        this.csvGenerator = new CsvReportGenerator()
+    private generator: IReportGenerator
+    constructor(){
+        this.generator = new PdfReportGenerator()
     }
 
     generateReport(type: ReportType, data: any[]): string {
-        let reportContent = '';
-
-        switch(type){
-            case 'CSV':
-                return this.csvGenerator.generateReport(['data'])
-            case 'PDF':
-                return this.pdfGenerator.generateReport( ['data'])
-            case 'XML':
-                return this.xmlGenerator.generateReport(['data'])
-            case 'JSON':
-                return this.jsonGenerator.generateReport(['data'])
-            default:
-                throw new Error("Report type is needed")
-
-        }
-       
+        return ReportFactory.getInstance().init(type).generateReport(data)
+    }
+    setGenerator(strategy: IReportGenerator){
+        this.generator = strategy
     }
 }
