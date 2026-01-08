@@ -97,6 +97,10 @@ export class CacheHandler extends RequestProcessorDecorator{
             };
         }
 
-        return super.process(req)
+        let response = super.process(req)
+        if (response.statusCode === 200) {
+            this.cache.set(cacheKey, response.data)
+        }
+        return response
     }
 }

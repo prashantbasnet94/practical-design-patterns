@@ -1,5 +1,5 @@
 import { IRequest } from "./interface";
-import { RequestProcessor } from "./request-processor.refactor";
+import { AuthHandler, CacheHandler, LoggingHandler, RequestProcessor, ValidationHandler } from "./request-processor.refactor";
 
 
 // Helper to simulate requests
@@ -16,10 +16,13 @@ function createRequest(id: string, userId: string, payload: string, token: strin
     };
 }
 
-const processor = new RequestProcessor();
+let processor = new LoggingHandler(new AuthHandler(new ValidationHandler(new CacheHandler(new RequestProcessor()))))
 
 console.log("--- Request 1: Valid Request ---");
 const req1 = createRequest("req-1", "user-1", "hello world");
+
+
+
 const res1 = processor.process(req1);
 console.log("Response:", res1);
 console.log("\n");
