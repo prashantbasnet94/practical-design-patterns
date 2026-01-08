@@ -1,13 +1,13 @@
 /**
  * CHALLENGE 3: VIDEO CONVERSION PIPELINE (YouTube Style)
- * 
+ *
  * CONTEXT:
  * Processing a video upload involves many complex, low-level steps:
  * Loading the file -> Checking the Codec -> Extracting Audio -> Transcoding Video -> Mixing Audio back -> Saving.
- * 
+ *
  * GOAL:
  * Create a `VideoConverterFacade` that offers a simple method: `convert(filename, format)`.
- * 
+ *
  * REQUIREMENTS:
  * The facade must coordinate:
  * 1. `VideoLoader`: Loads specific file.
@@ -15,7 +15,7 @@
  * 3. `CodecFactory`: extracts the source codec.
  * 4. `Transcoder`: converts buffer to new format.
  * 5. `AudioMixer`: fixes audio sync.
- * 
+ *
  * This is a classic "Pipeline" facade.
  */
 
@@ -38,14 +38,26 @@ class AudioMixer {
 
 export class VideoConverterFacade {
     // TODO: Coordinate the subsystems
-
+    private file?: VideoFile
+    private codec: CodecFactory
+    private audioMixer: AudioMixer
+    constructor (){
+        this.codec= new CodecFactory()
+        this.audioMixer = new AudioMixer()
+    }
     convert(filename: string, format: string): string {
+         this.file = new VideoFile(filename)
+
         console.log(`--- Conversion started: ${filename} to ${format} ---`);
         // 1. Load file
         // 2. Extract codec
+
         // 3. Read & Convert
+        let sourceCode = this.codec.extract(this.file)
+       let buffer =  BitrateReader.read(this.file, sourceCode)
+       let transcoded =  BitrateReader.convert(buffer, sourceCode, format)
         // 4. Fix Audio
-        return "result";
+        return this.audioMixer.fix(transcoded)
     }
 }
 

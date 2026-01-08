@@ -1,13 +1,13 @@
 /**
  * CHALLENGE 2: SYSTEM BOOTSTRAPPER FACADE
- * 
+ *
  * CONTEXT:
  * A backend server (like a Node app) needs to start many services in a specific order:
  * Logger -> Config -> Database -> Cache -> HTTP Server.
- * 
+ *
  * GOAL:
  * Create a `ServerFacade` with `start()` and `shutdown()` methods.
- * 
+ *
  * REQUIREMENTS:
  * 1. `start()`: Must initialize systems in the correct order.
  * 2. `shutdown()`: Must stop systems in REVERSE order.
@@ -35,13 +35,28 @@ class Server {
 
 export class BackendFacade {
     // TODO: Maintain references
-
+    private logger: Logger
+    private db: Database
+    private cache: Cache
+    private server: Server
+    constructor() {
+        this.logger = new Logger()
+        this.db = new Database()
+        this.cache = new Cache()
+        this.server = new Server()
+    }
     start() {
-        // TODO: correct order
+        this.logger.init()
+        this.db.connect()
+        this.cache.connect()
+        this.server.listen(3000)
     }
 
     shutdown() {
-        // TODO: reverse order
+          this.logger.close()
+        this.db.disconnect()
+        this.cache.disconnect()
+        this.server.stop()
     }
 }
 

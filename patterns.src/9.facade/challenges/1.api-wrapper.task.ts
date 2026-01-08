@@ -1,13 +1,14 @@
+import { TravelFacade } from './1.api-wrapper.task';
 /**
  * CHALLENGE 1: API WRAPPER FACADE
- * 
+ *
  * CONTEXT:
  * You are working with a messy 3rd party API client (`ComplexTravelApi`).
  * It requires 5 steps just to book a trip (auth, find distinct flights, book hotel, reserve car, process payment).
- * 
+ *
  * GOAL:
  * Create a `TravelFacade` with a simple method: `bookTrip(destination, dates)`.
- * 
+ *
  * REQUIREMENTS:
  * The facade should handle:
  * 1. Logging in (getting a token).
@@ -23,20 +24,18 @@ class ComplexTravelApi {
     processPayment(amount: number) { console.log(`Charged $${amount}`); }
 }
 
-export class TravelFacade {
-    private api: ComplexTravelApi;
-
+class TravelFacade{
+    private api: ComplexTravelApi
     constructor() {
-        this.api = new ComplexTravelApi();
+        this.api = new ComplexTravelApi()
     }
+    bookFullTrip(dest: string, date: string) {
+        this.api.login('apikey')
+        this.api.findFlight('lafayette', dest)
+        this.api.bookHotel(dest)
+        this.api.rentCar(dest)
+        this.api.processPayment(100)
 
-    bookFullTrip(destination: string, date: string) {
-        // TODO: Implement the simplified logic
-        // 1. Login
-        // 2. Find Flight
-        // 3. Book Hotel
-        // 4. Rent Car
-        // 5. Pay
     }
 }
 
