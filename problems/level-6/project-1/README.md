@@ -24,5 +24,20 @@ Refactor this monolithic flow into a **Chain of Responsibility** (or a Middlewar
 3.  Chain these handlers together dynamically in `src/main.ts` (or a `Server` configuration).
 4.  The `RequestProcessor` should simply trigger the first handler in the chain.
 
-**Bonus Challenge:**
+**Bonus Challenge 1:**
 Implement the chain such that a handler can decide *not* to pass the request to the next link (e.g., if Authentication fails, Validation should never run).
+
+**Bonus Challenge 2: The "Pipeline Builder"**
+The syntax `new A(new B(new C(...)))` is ugly and hard to read (the "Constructor Staircase").
+Create a `PipelineBuilder` class that allows you to configure the server like this:
+
+```typescript
+const server = new PipelineBuilder()
+    .add(LoggingHandler)
+    .add(AuthHandler)
+    .add(ValidationHandler)
+    .add(CacheHandler)
+    .build(new RequestProcessor());
+```
+
+This makes the configuration clean, readable, and linear!

@@ -1,4 +1,5 @@
 import { IRequest } from "./interface";
+import { PipelineBuilder } from "./pipeline-builder.refactor";
 import { AuthHandler, CacheHandler, LoggingHandler, RequestProcessor, ValidationHandler } from "./request-processor.refactor";
 
 
@@ -15,8 +16,14 @@ function createRequest(id: string, userId: string, payload: string, token: strin
         }
     };
 }
+    // new LoggingHandler(new AuthHandler(new ValidationHandler(new CacheHandler(new RequestProcessor()))))
 
-let processor = new LoggingHandler(new AuthHandler(new ValidationHandler(new CacheHandler(new RequestProcessor()))))
+let builder = new PipelineBuilder()
+builder.add(LoggingHandler)
+builder.add(AuthHandler)
+builder.add(ValidationHandler)
+builder.add(CacheHandler)
+let processor = builder.build(new RequestProcessor())
 
 console.log("--- Request 1: Valid Request ---");
 const req1 = createRequest("req-1", "user-1", "hello world");
