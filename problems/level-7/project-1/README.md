@@ -27,3 +27,80 @@ Refactor the `Document` class to use the **State Pattern**.
 2.  Create concrete state classes: `DraftState`, `ReviewState`, `PublishedState`, etc.
 3.  The `Document` class should delegate behavior to its current state object.
 4.  Remove all boolean state flags (`isDraft`, etc.) from the `Document` class.
+
+## Current State Visualization
+
+Here is the state machine diagram and decision logic of the current messy implementation.
+
+### 1. State Transition Diagram (The "Happy Path" & Valid Flows)
+
+This diagram shows how the document *should* move between states.
+
+```mermaid
+stateDiagram-v2
+    [*] --> Draft
+
+    state Draft {
+        [*] --> Edit
+        Edit --> [*]
+    }
+    
+    Draft --> Review: submitForReview()
+    Review --> Published: approve()
+    Review --> Rejected: reject()
+    Rejected --> Draft: modify()
+    Published --> Archived: archive()
+
+    note right of Review : Cannot Modify
+    note right of Published : Cannot Modify
+    note right of Archived : Final State
+```
+
+### 2. Decision Logic Tree (The "Messy" Reality)
+
+This represents the current `if/else` logic implemented in the class.
+
+#### `modify(content)`
+```mermaid
+graph TD
+    A["Start: modify"] --> B{"isPublished OR isArchived?"}
+    B -- "Yes" --> C["Error: Cannot modify"]
+    B -- "No" --> D{"isInReview?"}
+    D -- "Yes" --> E["Error: Cannot modify"]
+    D -- "No" --> F["Update Content"]
+    F --> G{"isRejected?"}
+    G -- "Yes" --> H["isRejected = false<br/>isDraft = true"]
+    G -- "No" --> I["End"]
+```
+
+#### `submitForReview()`
+```mermaid
+graph TD
+    A["Start: submitForReview"] --> B{"isInReview?"}
+    B -- "Yes" --> C["Error: Already in review"]
+    B -- "No" --> D{"isPublished OR isArchived?"}
+    D -- "Yes" --> E["Error: Cannot submit"]
+    D -- "No" --> F["isDraft = false<br/>isInReview = true<br/>isRejected = false"]
+```
+
+#### `approve()`, `reject()`, `archive()`
+```mermaid
+graph TD
+    subgraph approve
+    A1["Start"] --> B1{"isInReview?"}
+    B1 -- "No" --> C1["Error"]
+    B1 -- "Yes" --> D1["isInReview = false<br/>isPublished = true"]
+    end
+
+    subgraph reject
+    E2["Start"] --> F2{"isInReview?"}
+    F2 -- "No" --> G2["Error"]
+    F2 -- "Yes" --> H2["isInReview = false<br/>isRejected = true"]
+    end
+
+    subgraph archive
+    I3["Start"] --> J3{"isPublished?"}
+    J3 -- "No" --> K3["Error"]
+    J3 -- "Yes" --> L3["isPublished = false<br/>isArchived = true"]
+    end
+```
