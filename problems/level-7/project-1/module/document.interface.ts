@@ -1,12 +1,13 @@
 export interface IDocumentState{
     // these are the events that are tiggered to update the state
-
+    name:string
     submitForReview(document: IDocument): void
     reject(document: IDocument): void
     approve(docuement: IDocument): void
     archive(docuemnt: IDocument): void
     publish(document: IDocument): void
     startReview(document: IDocument): void
+    modify(document:IDocument, content:string): void
 }
 
 

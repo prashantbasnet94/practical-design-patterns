@@ -27,8 +27,7 @@ export class Document implements IDocument {
         this.state.approve(this)
     }
     modify(newContent: string): void {
-        console.log("modifying content data")
-        this.content = newContent
+       this.state.modify(this, newContent)
     }
     onSubmission(): void {
         console.log("Draft to be submitted for review")
@@ -42,17 +41,22 @@ export class Document implements IDocument {
     onArchival(): void {
         console.log(" Arhiveing this post")
     }
-    onReviewSubmission(): void{
+    onReviewSubmission(): void {
         console.log("Reviewing Submission: please wait!")
     }
-    onPublish(): void{
+    onPublish(): void {
         console.log("Publishing your post!")
     }
 }
 
 class DraftState implements IDocumentState {
+    modify(document: IDocument, content: string): void {
+        console.log("Modifying content to: ")
+        document.content = content
+    }
+    name = 'draft'
     startReview(document: IDocument): void {
-       console.log("Cannot review in draft.");
+        console.log("Cannot review in draft.");
     }
     archive(docuemnt: IDocument): void {
         console.log("Cannot archive in draft.");
@@ -73,11 +77,15 @@ class DraftState implements IDocumentState {
 
 }
 class ReviewState implements IDocumentState {
+    modify(document: IDocument, content: string): void {
+       console.log("Can only modify content in draft")
+    }
+    name = 'review';
     startReview(document: IDocument): void {
         console.log("Cannot review twice")
     }
     submitForReview(document: IDocument): void {
-       console.log("Cannot submit for review twice")
+        console.log("Cannot submit for review twice")
     }
     reject(document: IDocument): void {
         document.onRejection()
@@ -97,6 +105,11 @@ class ReviewState implements IDocumentState {
 }
 
 class RejectedState implements IDocumentState {
+    modify(document: IDocument, content: string): void {
+        document.content = content
+        document.setState(new DraftState())
+    }
+    name = 'reject';
     startReview(document: IDocument): void {
         console.log("cannot review after rejected")
     }
@@ -118,8 +131,12 @@ class RejectedState implements IDocumentState {
 }
 
 class ApprovedState implements IDocumentState {
+    modify(document: IDocument, content: string): void {
+        console.log("Can only modify content in draft")
+    }
+    name = 'approved';
     startReview(document: IDocument): void {
-       console.log("cannot review after apporval")
+        console.log("cannot review after apporval")
     }
     submitForReview(document: IDocument): void {
         console.log("Cannot approve multiple times")
@@ -139,8 +156,12 @@ class ApprovedState implements IDocumentState {
     }
 }
 class PublishedState implements IDocumentState {
+    modify(document: IDocument, content: string): void {
+        console.log("Can only modify content in draft")
+    }
+    name = 'publish';
     startReview(document: IDocument): void {
-       console.log("Cannot review after published")
+        console.log("Cannot review after published")
     }
     submitForReview(document: IDocument): void {
         console.log("Cannot Review again for published draft");
@@ -156,11 +177,15 @@ class PublishedState implements IDocumentState {
         docuemnt.setState(new ArchivedState())
     }
     publish(document: IDocument): void {
-       console.log("Cannot publish same docuemnt twice")
+        console.log("Cannot publish same docuemnt twice")
     }
 }
 
 class ArchivedState implements IDocumentState {
+    modify(document: IDocument, content: string): void {
+       console.log("Can only modify content in draft")
+    }
+    name = 'archive';
     startReview(document: IDocument): void {
         console.log("cannot review after arvhived")
     }
@@ -174,7 +199,7 @@ class ArchivedState implements IDocumentState {
         console.log("Cannot approve again once archived")
     }
     archive(docuemnt: IDocument): void {
-       console.log("Cannot archive twice")
+        console.log("Cannot archive twice")
     }
     publish(document: IDocument): void {
         console.log("Cannot published again once archived")
