@@ -1,16 +1,16 @@
 
-export class KVStore {
-    stack: Map<string, string | null>[]
+export class KVStore<K, V> {
+    stack: Map<K, V | null>[]
     constructor() {
 
-        this.stack = [new Map<string, string| null>()]
+        this.stack = [new Map<K, V| null>()]
     }
 
-    set(key: string, value: string): void {
+    set(key: K, value: V): void {
         this.stack[this.stack.length - 1].set(key, value)
     }
 
-    get(key: string): string | null {
+    get(key: K): string | null {
         for (let i = this.stack.length - 1; -1 < i; i--){
             let map = this.stack[i]
               if (map.has(key)) {
@@ -21,7 +21,7 @@ export class KVStore {
         return null;
     }
 
-    delete(key: string): void {
+    delete(key: K): void {
         let map = this.stack[this.stack.length -1]
             map.set(key, null)
     }
